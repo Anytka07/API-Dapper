@@ -1,0 +1,27 @@
+The movie table contains data about movies which will be shown in the theater. The primary key is id, which is auto_incremented like all primary keys in all other tables. The only mandatory data is title.
+
+The auditorium table identifies all auditoriums in theater. All data is mandatory
+The seats_no field can be used to calculate percentage of availability of auditoriums for a selected screening/movie/auditorium/date range. This is an example of data redundancy because we could get the number of seats for each auditorium by counting them in the seat table.
+
+The screening table contains data of all screenings and all fields are mandatory. A screening must have a related movie, auditorium and start time. We can’t have two showings in same auditorium at the same time. We can define a unique key consisting of auditorium_id and screening_start. This setup is better than defining a unique key consisting of movie_id, auditorium_id, and screening_start because that would allow us to enter screenings of two different movies at the same time in the same auditorium.
+
+The seat table contains a list of all seats we have in auditoriums with each seat assigned to strictly one auditorium. All fields are mandatory.
+
+The reservation_type table is a dictionary of all reservation types (by phone, online, in person). All fields are mandatory.
+
+The employee table lists all employees using the system. All fields are mandatory.
+
+In complex systems there are usually more roles so we need to have a role dictionary and employee/user-role connection.
+
+The reservation and seat_reserved tables are the main tables of our system. This is why I listed them last. All other tables can exist without reservation tables but without the reservation tables we would lose the reason for designing the whole database in the first place.
+
+The reservation table stores data about a ticket reservation and/or sale. If we have a reservation, the attribute reserved would be set to True, the reservation_type_id would be set according to the origin of the reservation and the employee_reserved_id would contain the id_employee value of the person who entered data (it would be empty if the reservation had been done online by the customer). In the same way, if tickets were sold, the employee_paid_id would be filled with the id_employee value of the person who sold tickets, the attribute paid would be set to True. The active attribute identifies if a record is still valid. If tickets were sold this attribute would always be True and the reservation without sales would be active until 30 min before screening starts
+
+The seat_reserved table enables us to make a reservation or one payment for multiple seats. After the employee checks a few free seats on the interface, one record would be added to this table for each of them. If we want to check which seats are free or taken we can check the values in this table joined to the reservation table where reservation.active = True.
+
+It is worth mentioning:
+
+reservation_type_id is a foreign key referencing the reservation type’s “id”. It is not mandatory because a reservation might not exist (in case we made a sale without a previous reservation)
+reservation_contact is a text input field for storing data of a person who made a reservation, it is not mandatory because a reservation might not exist (in case we made a sale without a previous reservation)
+employee_paid_id is related to a user who made a sale, it is not mandatory because a sale might not have happened (seat was reserved, reservation was canceled automatically, seat has not been sold)
+paid is a flag that indicates that payment has happened and is mandatory (values can be Yes/True or No/False)
